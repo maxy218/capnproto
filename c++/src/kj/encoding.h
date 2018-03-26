@@ -130,6 +130,29 @@ EncodingResult<String> decodeUriComponent(ArrayPtr<const char> text);
 //
 // See https://tools.ietf.org/html/rfc2396#section-2.3
 
+String encodeUrlFragment(ArrayPtr<const byte> bytes);
+String encodeUrlFragment(ArrayPtr<const char> bytes);
+// Encode URL fragment components using the fragment percent encode set defined by the WHATWG URL
+// specification. Use decodeUriComponent() to decode.
+//
+// See https://url.spec.whatwg.org/#fragment-percent-encode-set
+
+String encodeUrlPath(ArrayPtr<const byte> bytes);
+String encodeUrlPath(ArrayPtr<const char> bytes);
+// Encode URL path components using the path percent encode set defined by the WHATWG URL
+// specification. Use decodeUriComponent() to decode.
+//
+// NOTE: This passes through '/' characters.
+//
+// See https://url.spec.whatwg.org/#path-percent-encode-set
+
+String encodeUrlUserInfo(ArrayPtr<const byte> bytes);
+String encodeUrlUserInfo(ArrayPtr<const char> bytes);
+// Encode URL userinfo components using the userinfo percent encode set defined by the WHATWG URL
+// specification. Use decodeUriComponent() to decode.
+//
+// See https://url.spec.whatwg.org/#userinfo-percent-encode-set
+
 String encodeWwwForm(ArrayPtr<const byte> bytes);
 String encodeWwwForm(ArrayPtr<const char> bytes);
 EncodingResult<String> decodeWwwForm(ArrayPtr<const char> text);
@@ -215,6 +238,16 @@ inline EncodingResult<String> decodeUriComponent(ArrayPtr<const char> text) {
   return { String(result.releaseAsChars()), result.hadErrors };
 }
 
+inline String encodeUrlFragment(ArrayPtr<const char> text) {
+  return encodeUrlFragment(text.asBytes());
+}
+inline String encodeUrlPath(ArrayPtr<const char> text) {
+  return encodeUrlPath(text.asBytes());
+}
+inline String encodeUrlUserInfo(ArrayPtr<const char> text) {
+  return encodeUrlUserInfo(text.asBytes());
+}
+
 inline String encodeWwwForm(ArrayPtr<const char> text) {
   return encodeWwwForm(text.asBytes());
 }
@@ -276,6 +309,18 @@ inline Array<byte> decodeBinaryUriComponent(const char (&text)[s]) {
 template <size_t s>
 inline EncodingResult<String> decodeUriComponent(const char (&text)[s]) {
   return decodeUriComponent(arrayPtr(text, s-1));
+}
+template <size_t s>
+inline String encodeUrlFragment(const char (&text)[s]) {
+  return encodeUrlFragment(arrayPtr(text, s - 1));
+}
+template <size_t s>
+inline String encodeUrlPath(const char (&text)[s]) {
+  return encodeUrlPath(arrayPtr(text, s - 1));
+}
+template <size_t s>
+inline String encodeUrlUserInfo(const char (&text)[s]) {
+  return encodeUrlUserInfo(arrayPtr(text, s - 1));
 }
 template <size_t s>
 inline String encodeWwwForm(const char (&text)[s]) {

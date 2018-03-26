@@ -404,6 +404,58 @@ String encodeUriComponent(ArrayPtr<const byte> bytes) {
   return String(result.releaseAsArray());
 }
 
+String encodeUrlFragment(ArrayPtr<const byte> bytes) {
+  Vector<char> result(bytes.size() + 1);
+  for (byte b: bytes) {
+    if (('?' <= b && b <= '_') || // covers A-Z
+        ('a' <= b && b <= '~') || // covers a-z
+        ('#' <= b && b <= ';') || // covers 0-9
+        b == '!' || b == '=') {
+      result.add(b);
+    } else {
+      result.add('%');
+      result.add(HEX_DIGITS_URI[b/16]);
+      result.add(HEX_DIGITS_URI[b%16]);
+    }
+  }
+  result.add('\0');
+  return String(result.releaseAsArray());
+}
+
+String encodeUrlPath(ArrayPtr<const byte> bytes) {
+  Vector<char> result(bytes.size() + 1);
+  for (byte b: bytes) {
+    if (('@' <= b && b <= '_') || // covers A-Z
+        ('a' <= b && b <= 'z') ||
+        ('$' <= b && b <= ';') || // covers 0-9
+        b == '!' || b == '=' || b == '|' || b == '~') {
+      result.add(b);
+    } else {
+      result.add('%');
+      result.add(HEX_DIGITS_URI[b/16]);
+      result.add(HEX_DIGITS_URI[b%16]);
+    }
+  }
+  result.add('\0');
+  return String(result.releaseAsArray());
+}
+
+String encodeUrlUserInfo(ArrayPtr<const byte> bytes) {
+  Vector<char> result(bytes.size() + 1);
+  for (byte b: bytes) {
+    if (('A' <= b && b <= 'Z') || ('a' <= b && b <= 'z') || ('0' <= b && b <= '9') ||
+        ('$' <= b && b <= '.') || b == '_' || b == '!' || b == '~') {
+      result.add(b);
+    } else {
+      result.add('%');
+      result.add(HEX_DIGITS_URI[b/16]);
+      result.add(HEX_DIGITS_URI[b%16]);
+    }
+  }
+  result.add('\0');
+  return String(result.releaseAsArray());
+}
+
 String encodeWwwForm(ArrayPtr<const byte> bytes) {
   Vector<char> result(bytes.size() + 1);
   for (byte b: bytes) {
